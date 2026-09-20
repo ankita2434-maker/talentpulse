@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentPulse | Candidate Engagement Scoring & Outreach Automation</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              teal: '#0d9488',
+              tealLight: '#14b8a6',
+              blue: '#2563eb',
+              navy: '#0f172a',
+              surface: '#1e293b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="h-full flex flex-col bg-[#0b1120] text-slate-100 antialiased selection:bg-teal-500 selection:text-slate-950">
+
+  <!-- Persistent Top Header Navigation -->
+  <header class="h-16 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-40 px-4 lg:px-8 flex items-center justify-between">
+    <!-- Brand Logo -->
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-blue-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-teal-500/20">
+        TP
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="font-extrabold text-lg tracking-tight text-white">Talent<span class="text-teal-400">Pulse</span></span>
+          <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span>
+        </div>
+        <div class="text-[11px] text-slate-400 -mt-1 font-medium">Enterprise Candidate Engagement & Outreach</div>
+      </div>
+    </div>
+
+    <!-- Quick Search Input -->
+    <div class="hidden md:flex items-center w-80 relative">
+      <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+      <input type="text" id="filter-search" placeholder="Search candidates, skills, roles..." 
+             class="w-full bg-slate-800/80 border border-slate-700/80 rounded-lg pl-9 pr-4 py-1.5 text-xs text-slate-200 placeholder-slate-400 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition-all">
+    </div>
+
+    <!-- Role-Based Persona Switcher & User Profile -->
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-2 bg-slate-800/80 border border-slate-700/80 rounded-lg px-3 py-1 text-xs">
+        <span class="text-slate-400 font-medium">Role:</span>
+        <select id="persona-select" class="bg-transparent text-teal-300 font-semibold focus:outline-none cursor-pointer">
+          <option value="recruiter" class="bg-slate-900 text-white">Recruiter (Priya Sharma)</option>
+          <option value="ta_lead" class="bg-slate-900 text-white">TA Lead / Admin (Vikram Malhotra)</option>
+          <option value="leadership" class="bg-slate-900 text-white">Leadership (Rajeev Tandon, VP)</option>
+        </select>
+      </div>
+
+      <!-- Recruiter Avatar & Badge -->
+      <div class="flex items-center space-x-3 pl-2 border-l border-slate-800">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-teal-500 to-blue-500 p-0.5 shadow-md">
+          <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center text-teal-300 font-bold text-xs">
+            PS
+          </div>
+        </div>
+        <div class="hidden sm:block text-left">
+          <div id="persona-name" class="text-xs font-bold text-white">Priya Sharma</div>
+          <div id="persona-role" class="text-[10px] text-slate-400">Senior Tech Recruiter</div>
+        </div>
+        <span id="persona-badge" class="hidden lg:inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border bg-blue-500/20 text-blue-300 border-blue-500/40">
+          Recruiter View
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Body Layout: Left Sidebar + Dynamic Content -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="w-64 border-r border-slate-800/80 bg-slate-900/50 flex flex-col justify-between shrink-0 hidden md:flex">
+      <div class="p-4 space-y-6">
+        
+        <!-- Practice Family Scope Tag -->
+        <div class="px-3 py-2 rounded-lg bg-teal-950/30 border border-teal-800/30 text-xs text-teal-300 space-y-0.5">
+          <div class="font-bold flex items-center space-x-1.5">
+            <i data-lucide="layers" class="w-3.5 h-3.5 text-teal-400"></i>
+            <span>Consulting Practice Scope</span>
+          </div>
+          <div class="text-[11px] text-slate-400">SAP • Cloud/Data • RPA • QA • Supply Chain</div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="space-y-1">
+          <button data-nav-view="dashboard" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-semibold transition-all bg-slate-800 text-teal-400 border-l-4 border-teal-400">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+            <span>Recruiter Dashboard</span>
+          </button>
+
+          <button data-nav-view="candidates" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-all">
+            <i data-lucide="users" class="w-4 h-4"></i>
+            <span>Candidates Pipeline</span>
+          </button>
+
+          <button data-nav-view="candidate360" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-all">
+            <i data-lucide="user-check" class="w-4 h-4"></i>
+            <span>Candidate 360 Profile</span>
+          </button>
+
+          <button data-nav-view="campaigns" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-all">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            <span>Campaign Builder</span>
+          </button>
+
+          <button data-nav-view="analytics" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-all">
+            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+            <span>Leadership Analytics</span>
+          </button>
+
+          <button data-nav-view="settings" class="w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 transition-all">
+            <i data-lucide="sliders" class="w-4 h-4"></i>
+            <span>Scoring Weights</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Quick Platform Stats Footer -->
+      <div class="p-4 border-t border-slate-800/80 space-y-2 text-xs text-slate-400">
+        <div class="flex items-center justify-between">
+          <span>Ingested Sources:</span>
+          <span class="font-bold text-slate-200">4 Channels</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span>Active In Pipeline:</span>
+          <span class="font-bold text-teal-400">50 Candidates</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span>Scoring Engine:</span>
+          <span class="font-bold text-emerald-400">0-100 Multi-Signal</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Dynamic Content Canvas -->
+    <main class="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8">
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 1: RECRUITER DASHBOARD (HOME) -->
+      <!-- ========================================================================= -->
+      <section id="view-dashboard" class="space-y-8">
+        
+        <!-- Welcome & Status Banner -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-black tracking-tight text-white">Recruiter Command Center</h1>
+            <p class="text-sm text-slate-400 mt-0.5">Real-time candidate engagement scoring, channel pipeline health, and prioritized actions.</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button onclick="window.TALENT_PULSE_APP.openAddCandidateModal()" class="px-3.5 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/20 transition-all flex items-center space-x-1.5">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span>+ Add Candidate</span>
+            </button>
+            <button onclick="window.TALENT_PULSE_APP.switchView('campaigns')" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs transition-all flex items-center space-x-1.5">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>New Drip Campaign</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Top 4 Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- Card 1: Total Active Candidates -->
+          <div class="glass-panel glass-panel-hover rounded-xl p-5 border border-slate-700/60 space-y-2">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span class="font-semibold uppercase tracking-wider">Active Pipeline</span>
+              <div class="p-2 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <i data-lucide="users" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="text-3xl font-black text-white" id="metric-total-active">50</div>
+            <div class="text-xs text-slate-400">Normalized across 4 intake sources</div>
+          </div>
+
+          <!-- Card 2: Engagement Tiers Breakdown -->
+          <div class="glass-panel glass-panel-hover rounded-xl p-5 border border-slate-700/60 space-y-2">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span class="font-semibold uppercase tracking-wider">Engagement Tiers</span>
+              <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <i data-lucide="flame" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3 pt-1">
+              <div class="text-center">
+                <div class="text-xs font-extrabold text-emerald-400" id="metric-hot-count">18</div>
+                <div class="text-[10px] text-slate-400">Hot</div>
+              </div>
+              <div class="text-center">
+                <div class="text-xs font-extrabold text-amber-400" id="metric-warm-count">16</div>
+                <div class="text-[10px] text-slate-400">Warm</div>
+              </div>
+              <div class="text-center">
+                <div class="text-xs font-extrabold text-orange-400" id="metric-cooling-count">10</div>
+                <div class="text-[10px] text-slate-400">Cooling</div>
+              </div>
+              <div class="text-center">
+                <div class="text-xs font-extrabold text-slate-400" id="metric-cold-count">6</div>
+                <div class="text-[10px] text-slate-400">Cold</div>
+              </div>
+            </div>
+            <div class="text-[11px] text-slate-500">Based on 0–100 behavioral scoring</div>
+          </div>
+
+          <!-- Card 3: Campaigns Running -->
+          <div class="glass-panel glass-panel-hover rounded-xl p-5 border border-slate-700/60 space-y-2">
+            <div class="flex items-center justify-between text-xs text-slate-400">
+              <span class="font-semibold uppercase tracking-wider">Automated Campaigns</span>
+              <div class="p-2 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                <i data-lucide="send" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="text-3xl font-black text-white" id="metric-campaigns-running">4</div>
+            <div class="text-xs text-purple-400 font-medium">Drip sequences active with A/B tests</div>
+          </div>
+
+          <!-- Card 4: Candidates Needing Attention Today -->
+          <div class="glass-panel glass-panel-hover rounded-xl p-5 border border-orange-500/30 space-y-2 bg-gradient-to-br from-slate-900 via-slate-900 to-orange-950/20">
+            <div class="flex items-center justify-between text-xs text-orange-400">
+              <span class="font-bold uppercase tracking-wider">Attention Required</span>
+              <div class="p-2 rounded-lg bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="text-3xl font-black text-orange-400" id="metric-attention-today">12</div>
+            <div class="text-xs text-slate-300">Cooling candidates & pending fast-tracks</div>
+          </div>
+
+        </div>
+
+        <!-- Funnel by Source Channel Card -->
+        <div class="glass-panel rounded-xl p-6 border border-slate-700/60 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center space-x-2">
+                <i data-lucide="filter" class="w-4 h-4 text-teal-400"></i>
+                <span>Candidate Pipeline Funnel by Source Channel</span>
+              </h2>
+              <p class="text-xs text-slate-400">Ingested and normalized across Direct ATS, Staffing Vendors, Employee Referrals, and Walk-ins</p>
+            </div>
+            <div class="flex items-center space-x-4 text-xs">
+              <div class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span><span class="text-slate-300">Hot Tier</span></div>
+              <div class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span><span class="text-slate-300">Warm Tier</span></div>
+              <div class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-orange-500 inline-block"></span><span class="text-slate-300">Cooling Tier</span></div>
+              <div class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-600 inline-block"></span><span class="text-slate-300">Cold</span></div>
+            </div>
+          </div>
+
+          <!-- Dynamic Funnel Bars Container -->
+          <div id="funnel-bars-container" class="space-y-4 pt-2">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Prioritized Candidates Needing Attention Table -->
+        <div class="glass-panel rounded-xl border border-slate-700/60 overflow-hidden">
+          <div class="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center space-x-2">
+                <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+                <span>Candidates Needing Attention Today</span>
+              </h2>
+              <p class="text-xs text-slate-400">Cooling candidates requiring re-engagement or hot leads awaiting fast-track interviews</p>
+            </div>
+            <button onclick="window.TALENT_PULSE_APP.switchView('candidates')" class="text-xs text-teal-400 hover:text-teal-300 font-semibold flex items-center space-x-1">
+              <span>View All 50 Candidates</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 bg-slate-900/60">
+                  <th class="py-3 px-4 font-semibold">Candidate & Target Role</th>
+                  <th class="py-3 px-4 font-semibold">Source Channel</th>
+                  <th class="py-3 px-4 font-semibold">Stage</th>
+                  <th class="py-3 px-4 font-semibold">Engagement Pulse</th>
+                  <th class="py-3 px-4 font-semibold">Last Activity</th>
+                  <th class="py-3 px-4 font-semibold text-right">Quick Action</th>
+                </tr>
+              </thead>
+              <tbody id="attention-table-body">
+                <!-- Rendered dynamically by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 2: CANDIDATES PIPELINE DIRECTORY -->
+      <!-- ========================================================================= -->
+      <section id="view-candidates" class="hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-black tracking-tight text-white">Candidates Pipeline Directory</h1>
+            <p class="text-sm text-slate-400">Unified view of all candidate profiles, engagement ratings, and intake channels.</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <div id="candidates-filtered-count" class="text-xs text-slate-400 font-medium">
+              Showing 50 of 50 candidates
+            </div>
+            <button onclick="window.TALENT_PULSE_APP.openAddCandidateModal()" class="px-3.5 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/20 transition-all flex items-center space-x-1.5">
+              <i data-lucide="user-plus" class="w-4 h-4"></i>
+              <span>+ Add Candidate Profile</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="glass-panel p-4 rounded-xl border border-slate-700/60 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <!-- Role Family Filter -->
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Role Family</label>
+            <select id="filter-role" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-teal-400">
+              <option value="All">All Practice Families</option>
+              <option value="SAP/ERP Consultant">SAP/ERP Consultant</option>
+              <option value="Cloud/Data Engineer">Cloud/Data Engineer</option>
+              <option value="RPA/Automation Analyst">RPA/Automation Analyst</option>
+              <option value="QA Engineer">QA Engineer</option>
+              <option value="Supply Chain Tech Consultant">Supply Chain Tech Consultant</option>
+              <option value="Domain Consulting">Domain Consulting</option>
+            </select>
+          </div>
+
+          <!-- Source Channel Filter -->
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Source Channel</label>
+            <select id="filter-channel" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-teal-400">
+              <option value="All">All Ingestion Sources</option>
+              <option value="Direct Application">Direct Application (ATS)</option>
+              <option value="Staffing Vendor">Staffing Vendor</option>
+              <option value="Employee Referral">Employee Referral</option>
+              <option value="Walk-in / Job Fair">Walk-in / Job Fair</option>
+            </select>
+          </div>
+
+          <!-- Engagement Tier Filter -->
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Engagement Tier</label>
+            <select id="filter-tier" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-teal-400">
+              <option value="All">All Tiers (0-100)</option>
+              <option value="Hot">🔥 Hot (80-100)</option>
+              <option value="Warm">⚡ Warm (60-79)</option>
+              <option value="Cooling">❄️ Cooling (40-59)</option>
+              <option value="Cold">🧊 Cold (0-39)</option>
+            </select>
+          </div>
+
+          <!-- Reset Button -->
+          <div class="flex items-end">
+            <button onclick="document.getElementById('filter-role').value='All';document.getElementById('filter-channel').value='All';document.getElementById('filter-tier').value='All';document.getElementById('filter-search').value='';window.TALENT_PULSE_APP.switchView('candidates');" 
+                    class="w-full px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-300 transition-colors">
+              Reset Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- Full Candidates Table -->
+        <div class="glass-panel rounded-xl border border-slate-700/60 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 bg-slate-900/60">
+                  <th class="py-3 px-4 font-semibold">Candidate Name & Contact</th>
+                  <th class="py-3 px-4 font-semibold">Practice & Target Role</th>
+                  <th class="py-3 px-4 font-semibold">Source Channel</th>
+                  <th class="py-3 px-4 font-semibold">Pipeline Stage</th>
+                  <th class="py-3 px-4 font-semibold">Pulse Score</th>
+                  <th class="py-3 px-4 font-semibold">Activity Status</th>
+                  <th class="py-3 px-4 font-semibold text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="candidates-table-body">
+                <!-- Rendered dynamically by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 3: CANDIDATE 360 PROFILE -->
+      <!-- ========================================================================= -->
+      <section id="view-candidate-360" class="hidden space-y-6">
+        <div class="flex items-center space-x-2 text-xs text-slate-400">
+          <button onclick="window.TALENT_PULSE_APP.switchView('dashboard')" class="hover:text-teal-400">Dashboard</button>
+          <span>/</span>
+          <button onclick="window.TALENT_PULSE_APP.switchView('candidates')" class="hover:text-teal-400">Candidates</button>
+          <span>/</span>
+          <span class="text-slate-200">Candidate 360 View</span>
+        </div>
+
+        <div id="candidate-360-container" class="space-y-6">
+          <!-- Rendered dynamically by JS -->
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 4: CAMPAIGN BUILDER & ACTIVE CAMPAIGNS -->
+      <!-- ========================================================================= -->
+      <section id="view-campaigns" class="hidden space-y-8">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-black tracking-tight text-white">Outreach Automation & Campaigns</h1>
+            <p class="text-sm text-slate-400">Build multi-step automated drip sequences, target segments, and run A/B copy tests.</p>
+          </div>
+        </div>
+
+        <!-- 3-Step Campaign Wizard Card -->
+        <div class="glass-panel rounded-xl p-6 border border-slate-700/60 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+            <div>
+              <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+                <i data-lucide="wand-2" class="w-5 h-5 text-teal-400"></i>
+                <span>Automated Drip Campaign Builder</span>
+              </h2>
+              <p class="text-xs text-slate-400">Configure target audience segment, schedule drip steps, and preview merge fields</p>
+            </div>
+            
+            <!-- Step Indicators -->
+            <div class="flex items-center space-x-4 text-xs font-semibold">
+              <div class="flex items-center space-x-2">
+                <div id="step-indicator-1" class="w-8 h-8 rounded-full bg-teal-500 text-slate-950 font-bold flex items-center justify-center text-xs shadow-lg shadow-teal-500/30">1</div>
+                <span class="text-slate-200">Segment</span>
+              </div>
+              <div class="w-8 h-0.5 bg-slate-800"></div>
+              <div class="flex items-center space-x-2">
+                <div id="step-indicator-2" class="w-8 h-8 rounded-full bg-slate-800 text-slate-500 font-bold flex items-center justify-center text-xs border border-slate-700">2</div>
+                <span class="text-slate-400">Sequence</span>
+              </div>
+              <div class="w-8 h-0.5 bg-slate-800"></div>
+              <div class="flex items-center space-x-2">
+                <div id="step-indicator-3" class="w-8 h-8 rounded-full bg-slate-800 text-slate-500 font-bold flex items-center justify-center text-xs border border-slate-700">3</div>
+                <span class="text-slate-400">Review</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wizard Step 1: Define Segment -->
+          <div id="wizard-step-1" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">Campaign Name</label>
+                  <input type="text" id="wizard-campaign-name" value="Cooling Talent Re-Engagement (Consulting Practices)" 
+                         class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none focus:border-teal-400">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-2">Target Engagement Tiers</label>
+                  <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-orange-500/20 text-orange-300 border border-orange-500/40 cursor-pointer">
+                      ❄️ Cooling (40-59) [Selected]
+                    </span>
+                    <span class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 cursor-pointer">
+                      🔥 Hot (80-100)
+                    </span>
+                    <span class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 cursor-pointer">
+                      ⚡ Warm (60-79)
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-300 mb-2">Practice / Role Families</label>
+                  <div class="flex flex-wrap gap-2">
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-teal-500/20 text-teal-300 border border-teal-500/40 cursor-pointer">All Practices</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 cursor-pointer">SAP/ERP</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 cursor-pointer">Cloud/Data</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-400 border border-slate-700 cursor-pointer">RPA/AI</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Estimated Audience Card -->
+              <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5 flex flex-col justify-between space-y-4">
+                <div class="space-y-2">
+                  <div class="text-xs uppercase tracking-wider font-bold text-teal-400">Segment Match Estimator</div>
+                  <div class="text-3xl font-black text-white" id="campaign-audience-count">10 Candidates</div>
+                  <p class="text-xs text-slate-400 leading-relaxed">
+                    Based on your criteria, <b>10 candidates</b> are currently in the <b>Cooling</b> tier across practice lines and have had zero recruiter touchpoints in 7+ days.
+                  </p>
+                </div>
+                <div class="p-3 bg-slate-800/60 rounded-lg text-xs text-slate-300 space-y-1">
+                  <div>• 3 SAP/ERP Consultants</div>
+                  <div>• 3 Cloud & Data Platform Engineers</div>
+                  <div>• 2 RPA/Automation Analysts</div>
+                  <div>• 2 QA & Supply Chain Specialists</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Wizard Step 2: Build Drip Sequence -->
+          <div id="wizard-step-2" class="hidden space-y-4">
+            <div class="text-xs font-bold text-slate-300 mb-2">Configured Automated Steps:</div>
+
+            <div class="space-y-3">
+              <!-- Step 1 -->
+              <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 font-bold flex items-center justify-center text-xs">
+                    D+0
+                  </div>
+                  <div>
+                    <div class="font-bold text-sm text-slate-100">Step 1: Status Check & Re-engagement Nudge</div>
+                    <div class="text-xs text-slate-400">Email via Practice Talent Lead • Merge fields: First Name, Target Role</div>
+                  </div>
+                </div>
+                <span class="px-2 py-1 rounded bg-slate-800 text-slate-300 text-xs font-mono">Immediate on Trigger</span>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 font-bold flex items-center justify-center text-xs">
+                    D+3
+                  </div>
+                  <div>
+                    <div class="font-bold text-sm text-slate-100">Step 2: Role Architecture Blueprint & Tech Insights</div>
+                    <div class="text-xs text-slate-400">Email • Highlighting recent practice projects & client modernization</div>
+                  </div>
+                </div>
+                <span class="px-2 py-1 rounded bg-slate-800 text-slate-300 text-xs font-mono">Wait 3 Days</span>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 font-bold flex items-center justify-center text-xs">
+                    D+7
+                  </div>
+                  <div>
+                    <div class="font-bold text-sm text-slate-100">Step 3: Executive Fast-Track Offer Consultation</div>
+                    <div class="text-xs text-slate-400">SMS / InMail • Personal invitation for informal leadership discussion</div>
+                  </div>
+                </div>
+                <span class="px-2 py-1 rounded bg-slate-800 text-slate-300 text-xs font-mono">Wait 4 Days</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wizard Step 3: Review & Preview Merge Fields -->
+          <div id="wizard-step-3" class="hidden space-y-4">
+            <div class="text-xs font-bold text-slate-300">Sample Candidate Merge Preview:</div>
+            
+            <div id="campaign-preview-body" class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+              <!-- Live preview rendered by JS -->
+            </div>
+
+            <div class="p-3 bg-purple-950/20 border border-purple-800/30 rounded-lg text-xs text-purple-300 flex items-center space-x-2">
+              <i data-lucide="split" class="w-4 h-4 text-purple-400 shrink-0"></i>
+              <span><b>A/B Testing Active:</b> 50% of audience will receive Variant A (Informal Tone) and 50% will receive Variant B (Leadership Scope).</span>
+            </div>
+          </div>
+
+          <!-- Wizard Navigation Buttons -->
+          <div class="flex items-center justify-between pt-4 border-t border-slate-800">
+            <button id="wizard-prev-btn" class="hidden px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition-colors">
+              ← Previous Step
+            </button>
+            <div class="flex items-center space-x-3 ml-auto">
+              <button id="wizard-next-btn" class="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs shadow-md transition-colors">
+                Continue →
+              </button>
+              <button id="btn-launch-campaign" class="hidden px-5 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/20 transition-colors">
+                🚀 Launch Campaign Now
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Active Running Campaigns Table -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+              <i data-lucide="radio" class="w-4 h-4 text-emerald-400"></i>
+              <span>Active Automated Campaigns</span>
+            </h2>
+            <span class="text-xs text-slate-400">Continuous engagement monitoring</span>
+          </div>
+
+          <div id="active-campaigns-list" class="space-y-4">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Outreach Templates Library & Content Editor Section -->
+        <div class="glass-panel rounded-xl p-6 border border-slate-700/60 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center space-x-2">
+                <i data-lucide="file-edit" class="w-4 h-4 text-teal-400"></i>
+                <span>Outreach Templates & Content Editor</span>
+              </h2>
+              <p class="text-xs text-slate-400">Modify email, SMS, and LinkedIn InMail language, tone of voice, and merge fields</p>
+            </div>
+            <button onclick="window.TALENT_PULSE_APP.openEditTemplateModal(null)" class="px-3.5 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/20 transition-all flex items-center space-x-1.5">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>+ Create New Template</span>
+            </button>
+          </div>
+
+          <!-- Templates Cards Grid -->
+          <div id="templates-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Rendered dynamically by JS -->
+          </div>
+        </div>
+
+        <!-- Proactive Automated Triggers Section -->
+        <div class="glass-panel rounded-xl p-6 border border-slate-700/60 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div>
+              <h2 class="text-base font-bold text-white flex items-center space-x-2">
+                <i data-lucide="cpu" class="w-4 h-4 text-teal-400"></i>
+                <span>Automated Proactive Triggers</span>
+              </h2>
+              <p class="text-xs text-slate-400">Real-time event listeners triggering notifications or candidate re-engagement</p>
+            </div>
+            <span class="px-2 py-0.5 rounded text-xs bg-emerald-500/20 text-emerald-300 font-medium border border-emerald-500/40">
+              4 Triggers Active
+            </span>
+          </div>
+
+          <div id="automated-triggers-list" class="space-y-2">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 5: LEADERSHIP ANALYTICS -->
+      <!-- ========================================================================= -->
+      <section id="view-analytics" class="hidden space-y-8">
+        
+        <div>
+          <h1 class="text-2xl font-black tracking-tight text-white">Leadership Analytics & Channel ROI</h1>
+          <p class="text-sm text-slate-400">Comparative source effectiveness, candidate conversion velocity, and campaign return on investment.</p>
+        </div>
+
+        <!-- Channel Effectiveness Table -->
+        <div class="glass-panel rounded-xl border border-slate-700/60 overflow-hidden space-y-4 p-5">
+          <div class="border-b border-slate-800 pb-3">
+            <h2 class="text-base font-bold text-white flex items-center space-x-2">
+              <i data-lucide="bar-chart-2" class="w-4 h-4 text-teal-400"></i>
+              <span>Source Channel Effectiveness Matrix</span>
+            </h2>
+            <p class="text-xs text-slate-400">Tracking candidates sourced vs hot tier conversion vs eventual offers/hires</p>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 bg-slate-900/60">
+                  <th class="py-3 px-4 font-semibold">Source Channel</th>
+                  <th class="py-3 px-4 font-semibold">Total Sourced</th>
+                  <th class="py-3 px-4 font-semibold">Hot Tier (🔥)</th>
+                  <th class="py-3 px-4 font-semibold">Warm Tier</th>
+                  <th class="py-3 px-4 font-semibold">Cooling Tier</th>
+                  <th class="py-3 px-4 font-semibold">Offers/Hires</th>
+                  <th class="py-3 px-4 font-semibold">Avg Time to Engage</th>
+                  <th class="py-3 px-4 font-semibold">Hire Conversion Rate</th>
+                </tr>
+              </thead>
+              <tbody id="analytics-channel-table">
+                <!-- Rendered dynamically by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Practice Family Engagement Distribution -->
+        <div class="glass-panel rounded-xl p-6 border border-slate-700/60 space-y-4">
+          <div class="border-b border-slate-800 pb-3">
+            <h2 class="text-base font-bold text-white flex items-center space-x-2">
+              <i data-lucide="target" class="w-4 h-4 text-teal-400"></i>
+              <span>Practice / Role Family Health Index</span>
+            </h2>
+            <p class="text-xs text-slate-400">Average candidate engagement scores across technology practices</p>
+          </div>
+
+          <div id="analytics-role-bars" class="space-y-4 pt-2">
+            <!-- Rendered dynamically by JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 6: SCORING WEIGHTS & ENGINE CONFIGURATOR -->
+      <!-- ========================================================================= -->
+      <section id="view-settings" class="hidden space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-black tracking-tight text-white">Engagement Scoring Weights Configuration</h1>
+            <p class="text-sm text-slate-400">Tune how behavioral signals contribute to candidate pulse scores (0–100).</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button id="btn-reset-weights" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-slate-300 transition-colors">
+              Reset Defaults
+            </button>
+            <button id="btn-save-weights" class="px-4 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/20 transition-colors">
+              Save & Recalculate Live
+            </button>
+          </div>
+        </div>
+
+        <!-- Sliders Container -->
+        <div class="glass-panel rounded-xl p-6 border border-slate-700/60 space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <h2 class="text-base font-bold text-white">Pluggable Signal Weights</h2>
+            <div id="lbl-total-weight" class="text-xs font-bold text-emerald-400">Total Base Points: 100 / 100</div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Slider 1: Email Responsiveness -->
+            <div class="space-y-2 p-4 rounded-lg bg-slate-900/60 border border-slate-800">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-200">Email / Message Interaction</span>
+                <span id="lbl-weight-email" class="font-mono text-teal-400 font-bold">15 pts</span>
+              </div>
+              <input type="range" id="weight-email" min="5" max="35" value="15" class="w-full">
+              <p class="text-[11px] text-slate-400">Score weight awarded for email opens and link clicks</p>
+            </div>
+
+            <!-- Slider 2: Response Latency -->
+            <div class="space-y-2 p-4 rounded-lg bg-slate-900/60 border border-slate-800">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-200">Recruiter Response Speed</span>
+                <span id="lbl-weight-latency" class="font-mono text-teal-400 font-bold">20 pts</span>
+              </div>
+              <input type="range" id="weight-latency" min="5" max="35" value="20" class="w-full">
+              <p class="text-[11px] text-slate-400">Points awarded for fast candidate replies (&lt;6 hours)</p>
+            </div>
+
+            <!-- Slider 3: Assessment Turnaround -->
+            <div class="space-y-2 p-4 rounded-lg bg-slate-900/60 border border-slate-800">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-200">Technical Assessment Completion</span>
+                <span id="lbl-weight-assessment" class="font-mono text-teal-400 font-bold">20 pts</span>
+              </div>
+              <input type="range" id="weight-assessment" min="5" max="35" value="20" class="w-full">
+              <p class="text-[11px] text-slate-400">Speed and score on coding/functional evaluations</p>
+            </div>
+
+            <!-- Slider 4: Portal Revisit Activity -->
+            <div class="space-y-2 p-4 rounded-lg bg-slate-900/60 border border-slate-800">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-200">Careers Portal Revisit Activity</span>
+                <span id="lbl-weight-portal" class="font-mono text-teal-400 font-bold">15 pts</span>
+              </div>
+              <input type="range" id="weight-portal" min="5" max="30" value="15" class="w-full">
+              <p class="text-[11px] text-slate-400">Visits to job boards, company COE blogs, and portal</p>
+            </div>
+
+            <!-- Slider 5: Interview Agility -->
+            <div class="space-y-2 p-4 rounded-lg bg-slate-900/60 border border-slate-800">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-200">Interview Scheduling Agility</span>
+                <span id="lbl-weight-interview" class="font-mono text-teal-400 font-bold">15 pts</span>
+              </div>
+              <input type="range" id="weight-interview" min="5" max="30" value="15" class="w-full">
+              <p class="text-[11px] text-slate-400">Fast confirmation of panel slots with zero reschedules</p>
+            </div>
+
+            <!-- Slider 6: Explicit Interest -->
+            <div class="space-y-2 p-4 rounded-lg bg-slate-900/60 border border-slate-800">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-200">Explicit Intent & Job Alerts</span>
+                <span id="lbl-weight-interest" class="font-mono text-teal-400 font-bold">15 pts</span>
+              </div>
+              <input type="range" id="weight-interest" min="5" max="30" value="15" class="w-full">
+              <p class="text-[11px] text-slate-400">Saved jobs, active alert subscriptions, profile refresh</p>
+            </div>
+
+            <!-- Slider 7: Inactivity Decay Sensitivity -->
+            <div class="space-y-2 p-4 rounded-lg bg-slate-900/60 border border-orange-800/40 md:col-span-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-orange-400">Inactivity Time Decay Multiplier</span>
+                <span id="lbl-weight-decay" class="font-mono text-orange-400 font-bold">1.0x</span>
+              </div>
+              <input type="range" id="weight-decay" min="50" max="200" value="100" class="w-full">
+              <p class="text-[11px] text-slate-400">Rate at which candidate engagement points diminish after 5 days of silence</p>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: 1-CLICK QUICK OUTREACH COMPOSER -->
+  <!-- ========================================================================= -->
+  <div id="outreach-modal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel rounded-2xl max-w-lg w-full p-6 border border-slate-700 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center space-x-2">
+            <i data-lucide="send" class="w-4 h-4 text-teal-400"></i>
+            <span>Send Candidate Outreach</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">
+            To: <b id="outreach-candidate-name" class="text-slate-200">Candidate Name</b> 
+            (<span id="outreach-candidate-role" class="text-teal-400">Role</span>)
+          </p>
+        </div>
+        <button onclick="window.TALENT_PULSE_APP.openOutreachModal(null)" class="text-slate-400 hover:text-white" id="outreach-cancel-btn">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Select Role-Aware Template</label>
+          <select id="outreach-template-select" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+            <!-- Rendered by JS -->
+          </select>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div class="col-span-2">
+            <label class="block font-semibold text-slate-300 mb-1">Subject Line</label>
+            <input type="text" id="outreach-subject-input" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Channel</label>
+            <select id="outreach-channel-select" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+              <option value="Email">Email</option>
+              <option value="SMS">SMS / WhatsApp</option>
+              <option value="InMail">LinkedIn InMail</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block font-semibold text-slate-300">Message Body (Merge Fields Auto-Populated)</label>
+            <div class="flex items-center space-x-1 text-[11px] text-slate-400">
+              <span>Insert tag:</span>
+              <button type="button" onclick="window.TALENT_PULSE_APP.insertMergeTag('outreach-body-input', '{{first_name}}')" class="px-1.5 py-0.5 rounded bg-slate-800 text-teal-300 border border-slate-700 font-mono hover:bg-slate-700 transition-colors">+first_name</button>
+              <button type="button" onclick="window.TALENT_PULSE_APP.insertMergeTag('outreach-body-input', '{{target_role}}')" class="px-1.5 py-0.5 rounded bg-slate-800 text-teal-300 border border-slate-700 font-mono hover:bg-slate-700 transition-colors">+role</button>
+              <button type="button" onclick="window.TALENT_PULSE_APP.insertMergeTag('outreach-body-input', '{{role_family}}')" class="px-1.5 py-0.5 rounded bg-slate-800 text-teal-300 border border-slate-700 font-mono hover:bg-slate-700 transition-colors">+practice</button>
+              <button type="button" onclick="window.TALENT_PULSE_APP.insertMergeTag('outreach-body-input', '{{company}}')" class="px-1.5 py-0.5 rounded bg-slate-800 text-teal-300 border border-slate-700 font-mono hover:bg-slate-700 transition-colors">+company</button>
+            </div>
+          </div>
+          <textarea id="outreach-body-input" rows="7" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-slate-200 font-sans focus:outline-none focus:border-teal-400 leading-relaxed"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+        <button type="button" onclick="window.TALENT_PULSE_APP.saveComposerAsNewTemplate()" class="text-xs text-teal-400 hover:text-teal-300 font-medium flex items-center space-x-1">
+          <i data-lucide="bookmark-plus" class="w-3.5 h-3.5"></i>
+          <span>Save as Reusable Template</span>
+        </button>
+        <div class="flex items-center space-x-3">
+          <button onclick="document.getElementById('outreach-modal').classList.add('hidden')" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition-colors">
+            Cancel
+          </button>
+          <button id="outreach-send-btn" class="px-5 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/20 transition-all flex items-center space-x-1.5">
+            <i data-lucide="send" class="w-3.5 h-3.5"></i>
+            <span>Send Message & Log Touchpoint</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: EDIT OUTREACH TEMPLATE LANGUAGE & CONTENT -->
+  <!-- ========================================================================= -->
+  <div id="edit-template-modal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel rounded-2xl max-w-xl w-full p-6 border border-slate-700 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center space-x-2">
+            <i data-lucide="file-edit" class="w-5 h-5 text-teal-400"></i>
+            <span id="edit-template-modal-title">Edit Outreach Template Language</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">Customize wording, channel tone, and personalized merge tags</p>
+        </div>
+        <button onclick="window.TALENT_PULSE_APP.closeEditTemplateModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="edit-template-form" onsubmit="event.preventDefault(); window.TALENT_PULSE_APP.saveTemplateChanges();" class="space-y-3.5 text-xs">
+        <input type="hidden" id="edit-template-id">
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Template Name <span class="text-rose-400">*</span></label>
+          <input type="text" id="edit-template-name" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Channel <span class="text-rose-400">*</span></label>
+            <select id="edit-template-channel" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+              <option value="Email">Email</option>
+              <option value="SMS">SMS / WhatsApp</option>
+              <option value="InMail">LinkedIn InMail</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Practice Family</label>
+            <select id="edit-template-family" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+              <option value="All">All Practices</option>
+              <option value="SAP/ERP Consultant">SAP/ERP Consultant</option>
+              <option value="Cloud/Data Engineer">Cloud/Data Engineer</option>
+              <option value="RPA/Automation Analyst">RPA/Automation Analyst</option>
+              <option value="QA Engineer">QA Engineer</option>
+              <option value="Supply Chain Tech Consultant">Supply Chain Tech Consultant</option>
+              <option value="Domain Consulting">Domain Consulting</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Tone of Voice</label>
+            <select id="edit-template-tone" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+              <option value="Professional Consulting">Professional Consulting</option>
+              <option value="Executive Leadership">Executive Leadership</option>
+              <option value="Informal Tech Peer">Informal Tech Peer</option>
+              <option value="Direct & Fast">Direct & Fast</option>
+              <option value="Gentle Re-engagement">Gentle Re-engagement</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Subject Line (or Headline for InMail/Email)</label>
+          <input type="text" id="edit-template-subject" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="font-semibold text-slate-300">Message Content</label>
+            <span class="text-[11px] text-slate-400">Click a tag to insert:</span>
+          </div>
+          
+          <!-- Clickable Merge Tags -->
+          <div class="flex flex-wrap gap-1.5 mb-2">
+            <button type="button" onclick="window.TALENT_PULSE_APP.insertMergeTag('edit-template-body', '{{first_name}}')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700 text-[11px] font-mono transition-colors">+ {{first_name}}</button>
+            <button type="button" onclick="window.TALENT_PULSE_APP.insertMergeTag('edit-template-body', '{{target_role}}')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700 text-[11px] font-mono transition-colors">+ {{target_role}}</button>
+            <button type="button" onclick="window.TALENT_PULSE_APP.insertMergeTag('edit-template-body', '{{role_family}}')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700 text-[11px] font-mono transition-colors">+ {{role_family}}</button>
+            <button type="button" onclick="window.TALENT_PULSE_APP.insertMergeTag('edit-template-body', '{{company}}')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700 text-[11px] font-mono transition-colors">+ {{company}}</button>
+            <button type="button" onclick="window.TALENT_PULSE_APP.insertMergeTag('edit-template-body', '{{referrer_name}}')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700 text-[11px] font-mono transition-colors">+ {{referrer_name}}</button>
+          </div>
+
+          <textarea id="edit-template-body" rows="7" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-slate-200 font-sans focus:outline-none focus:border-teal-400 leading-relaxed"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
+          <button type="button" onclick="window.TALENT_PULSE_APP.closeEditTemplateModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/20 transition-all flex items-center space-x-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Save Template Changes</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: ADD NEW CANDIDATE PROFILE -->
+  <!-- ========================================================================= -->
+  <div id="add-candidate-modal" class="fixed inset-0 modal-backdrop z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel rounded-2xl max-w-2xl w-full p-6 border border-slate-700 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center space-x-2">
+            <i data-lucide="user-plus" class="w-5 h-5 text-teal-400"></i>
+            <span>Add New Candidate Profile</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Ingest candidate across Direct ATS, Staffing Vendor, Referral, or Walk-in Drive
+          </p>
+        </div>
+        <button onclick="window.TALENT_PULSE_APP.closeAddCandidateModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="add-candidate-form" onsubmit="event.preventDefault(); window.TALENT_PULSE_APP.saveNewCandidate();" class="space-y-4 text-xs">
+        <!-- 1. Core Profile Details -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Full Name <span class="text-rose-400">*</span></label>
+            <input type="text" id="new-cand-name" required placeholder="e.g. Arun Ramanathan" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Email Address <span class="text-rose-400">*</span></label>
+            <input type="email" id="new-cand-email" required placeholder="e.g. arun.r@example.com" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Phone Number</label>
+            <input type="text" id="new-cand-phone" placeholder="e.g. +91 98450 67890" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Current Location</label>
+            <input type="text" id="new-cand-location" placeholder="e.g. Bengaluru, India" value="Bengaluru, India" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+          </div>
+        </div>
+
+        <!-- 2. Role & Practice Alignment -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800/80">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Target Practice Family <span class="text-rose-400">*</span></label>
+            <select id="new-cand-family" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+              <option value="SAP/ERP Consultant">SAP/ERP Consultant</option>
+              <option value="Cloud/Data Engineer">Cloud/Data Engineer</option>
+              <option value="RPA/Automation Analyst">RPA/Automation Analyst</option>
+              <option value="QA Engineer">QA Engineer</option>
+              <option value="Supply Chain Tech Consultant">Supply Chain Tech Consultant</option>
+              <option value="Domain Consulting">Domain Consulting</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Target Role Title <span class="text-rose-400">*</span></label>
+            <input type="text" id="new-cand-role" required placeholder="e.g. Senior SAP S/4HANA Architect" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Years of Experience</label>
+            <input type="number" id="new-cand-exp" min="1" max="30" value="8" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+          </div>
+        </div>
+
+        <!-- 3. Stage & Intake Source Channel -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800/80">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Initial Pipeline Stage</label>
+            <select id="new-cand-stage" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-teal-400">
+              <option value="Sourced">Sourced</option>
+              <option value="Screening" selected>Screening</option>
+              <option value="Technical Interview">Technical Interview</option>
+              <option value="Client Interview">Client Interview</option>
+              <option value="Offer">Offer</option>
+              <option value="Hired">Hired</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-teal-400 mb-1">Intake Source Channel <span class="text-rose-400">*</span></label>
+            <select id="new-cand-channel" onchange="window.TALENT_PULSE_APP.handleChannelChange(this.value)" class="w-full bg-slate-800 border border-teal-500/50 rounded-lg px-3 py-2 text-white font-medium focus:outline-none focus:border-teal-400">
+              <option value="Direct Application">Direct Application (ATS)</option>
+              <option value="Staffing Vendor">Consultant / Staffing Vendor</option>
+              <option value="Employee Referral">Employee Referral</option>
+              <option value="Walk-in / Job Fair">Walk-in / Job Fair Drive</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 4. Dynamic Channel-Specific Metadata -->
+        <div id="channel-fields-container" class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
+          <!-- Injected dynamically by JS based on selected channel -->
+        </div>
+
+        <!-- 5. Initial Behavioral Engagement Signals (Quick Preset) -->
+        <div class="p-3.5 rounded-xl bg-slate-900/50 border border-slate-800/80 space-y-2">
+          <label class="block font-semibold text-slate-300">Initial Candidate Engagement Posture</label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <label class="flex items-center space-x-2 p-2 rounded bg-slate-800/60 border border-slate-700/60 cursor-pointer hover:bg-slate-800">
+              <input type="radio" name="cand-posture" value="hot" checked class="text-teal-400 focus:ring-0">
+              <div>
+                <div class="font-bold text-emerald-400 text-[11px]">🔥 High Interest (Hot)</div>
+                <div class="text-[10px] text-slate-400">Fast reply, active portal</div>
+              </div>
+            </label>
+            <label class="flex items-center space-x-2 p-2 rounded bg-slate-800/60 border border-slate-700/60 cursor-pointer hover:bg-slate-800">
+              <input type="radio" name="cand-posture" value="warm" class="text-teal-400 focus:ring-0">
+              <div>
+                <div class="font-bold text-amber-400 text-[11px]">⚡ Moderate (Warm)</div>
+                <div class="text-[10px] text-slate-400">Normal response & interest</div>
+              </div>
+            </label>
+            <label class="flex items-center space-x-2 p-2 rounded bg-slate-800/60 border border-slate-700/60 cursor-pointer hover:bg-slate-800">
+              <input type="radio" name="cand-posture" value="cooling" class="text-teal-400 focus:ring-0">
+              <div>
+                <div class="font-bold text-orange-400 text-[11px]">❄️ Cooling Off</div>
+                <div class="text-[10px] text-slate-400">Delayed replies, silent 7d</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-800">
+          <button type="button" onclick="window.TALENT_PULSE_APP.closeAddCandidateModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/20 transition-all flex items-center space-x-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>Save Candidate Profile</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-notification" class="fixed bottom-6 right-6 z-50 hidden">
+    <div class="bg-slate-900 border border-teal-500/50 rounded-xl px-4 py-3 shadow-2xl flex items-center space-x-3 text-xs text-white">
+      <div class="w-6 h-6 rounded-full bg-teal-500/20 text-teal-400 flex items-center justify-center font-bold">
+        ✓
+      </div>
+      <div id="toast-message">Action completed successfully</div>
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="data/candidates.js"></script>
+  <script src="js/scoring-engine.js"></script>
+  <script src="js/campaign-engine.js"></script>
+  <script src="js/analytics-engine.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    // Initialize Lucide icons on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) window.lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
